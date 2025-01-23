@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fractals Visualizer</title>
+    <style>
+      body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      svg {
+        width: 80vw;
+      }
+      #depthSlider {
+        margin-top: 32px;
+        width: 80vw;
+      }
+    </style>
+  </head>
+  <body>
+    <select id="fractal-select">
+      <option value="none" disabled selected>Select Fractal</option>
+      <option value="sierpinski">Sierpinski</option>
+      <option value="cantor">Cantor</option>
+    </select>
+    <svg id="cantor-set" xmlns="http://www.w3.org/2000/svg"></svg>
+
+    <svg
+      id="sierpinski"
+      viewBox="0 0 50 50"
+      xmlns="http://www.w3.org/2000/svg"
+    ></svg>
+
+    <input
+      type="range"
+      id="depthSlider"
+      min="0"
+      max="11"
+      value="0"
+      step="1"
+      list="ticks"
+    />
+    <datalist id="ticks">
+      <option value="0" label="0"></option>
+      <option value="1" label="1"></option>
+      <option value="2" label="2"></option>
+      <option value="3" label="3"></option>
+      <option value="4" label="4"></option>
+      <option value="5" label="5"></option>
+      <option value="6" label="6"></option>
+      <option value="7" label="7"></option>
+      <option value="8" label="8"></option>
+      <option value="9" label="9"></option>
+      <option value="10" label="10"></option>
+      <option value="11" label="11"></option>
+    </datalist>
+    <div id="info"></div>
+    <script>
+      const fractalSelect = document.getElementById("fractal-select");
+      const cantorSet = document.getElementById("cantor-set");
+      const sierpinski = document.getElementById("sierpinski");
+      const depthSlider = document.getElementById("depthSlider");
+      const info = document.getElementById("info");
+
+      function drawLine(start, end, y) {
+        const line = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "line"
+        );
+        line.setAttribute("x1", start);
+        line.setAttribute("x2", end);
+        line.setAttribute("y1", y);
+        line.setAttribute("y2", y);
+        line.setAttribute("stroke", "black");
+        line.setAttribute("stroke-width", "2");
+        cantorSet.appendChild(line);
+      }
+
+      function drawCantorSet(start, end, y, n) {
+        if (n >= depthSlider.value) {
+          // base case: C_0 = [start, end]
+          drawLine(start, end, y);
+        } else {
+          const third = (end - start) / 3;
+          // cantor set: C_n+1 = (1/3)C_n U (2/3) + (1/3)C_n
+          drawCantorSet(start, start + third, y + 10, n + 1);
+          drawCantorSet(start + 2 * third, end, y + 10, n + 1);
+          drawLine(start, end, y);
+        }
+      }
+
+      function drawTriangle(x, y, size, color) {
+        const points = `${x},${y} ${x + size / 2},${y + size} ${x - size / 2},${
+          y + size
+        }`;
+        const triangle = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "polygon"
+        );
+        triangle.setAttribute("points", points);
+        triangle.setAttribute("fill", color);
+        sierpinski.appendChild(triangle);
+      }
+
+      function drawSierpinski(x, y, size, depth) {
+        if (depth <= 0) {
+          drawTriangle(x, y, size, "black");
+        } else {
+          const half = size / 2;
+          drawSierpinski(x, y, half, depth - 1); // Top
+          drawSierpinski(x - half / 2, y + half, half, depth - 1); // Bottom-left
+          drawSierpinski(x + half / 2, y + half, half, depth - 1); // Bottom-right
+        }
+      }
+
+      fractalSelect.addEventListener("change", () => {
+        sierpinski.innerHTML = "";
+        cantorSet.innerHTML = "";
+        depthSlider.value = 0;
+        depthSlider.dispatchEvent(new Event("input"));
+
+        switch (fractalSelect.value) {
+          case "sierpinski":
+            cantorSet.style.display = "none";
+            sierpinski.style.display = "block";
+            drawSierpinski(25, 0, 50, 0);
+            break;
+          case "cantor":
+            sierpinski.style.display = "none";
+            cantorSet.style.display = "block";
+            drawCantorSet(0, window.innerWidth * 0.8, 50, 0);
+            break;
+        }
+      });
+
+      depthSlider.addEventListener("input", () => {
+        sierpinski.innerHTML = "";
+        cantorSet.innerHTML = "";
+        const startTime = performance.now();
+
+        switch (fractalSelect.value) {
+          case "sierpinski":
+            drawSierpinski(25, 0, 50, depthSlider.value);
+            break;
+          case "cantor":
+            drawCantorSet(0, window.innerWidth * 0.8, 50, 0);
+            break;
+        }
+
+        info.textContent = `Depth: ${depthSlider.value} | Time to render: ${(
+          performance.now() - startTime
+        ).toFixed(2)}ms`;
+      });
+    </script>
+  </body>
+</html>
