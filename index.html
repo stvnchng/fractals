@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Fractals Visualizer</title>
     <link rel="stylesheet" href="style.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
   </head>
   <body>
     <select id="fractal-select">
@@ -13,12 +14,13 @@
       <option value="sierpinski">Sierpinski Triangle</option>
       <option value="tree">Pythagoras Tree</option>
       <option value="carpet">Sierpinski Carpet</option>
-      <!-- <option value="snowflake">Koch Snowflake</option>
-      <option value="dragon">Dragon Curve</option>
-      <option value="hilbert">Hilbert Curve</option> -->
+      <!-- <option value="gasket">Apollonian Gasket</option> -->
+      <!-- <option value="snowflake">Koch Snowflake</option> -->
+      <!-- <option value="mandelbrot">Mandelbrot Set</option> -->
+      <!-- <option value="julia">Julia Set</option> -->
+      <!-- <option value="dragon">Dragon Curve</option> -->
+      <!-- <option value="hilbert">Hilbert Curve</option> -->
     </select>
-
-    <svg id="fractal" xmlns="http://www.w3.org/2000/svg"></svg>
 
     <input
       type="range"
@@ -31,6 +33,6 @@
     />
     <datalist id="ticks"> </datalist>
     <div id="info"></div>
-    <script type="module" src="main.js"></script>
+    <script src="main.js"></script>
   </body>
 </html>

@@ -31,3 +31,7 @@ body {
     height: 40vh;
   }
 }
+
+canvas {
+  margin-top: 24px;
+}
